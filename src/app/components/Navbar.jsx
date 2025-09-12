@@ -9,7 +9,7 @@ export default function Navbar() {
         <div>
             <ThemeToggle/>
         </div>
-        <Button>
+        <Button variant="default">
             Click
         </Button>
     </div>
