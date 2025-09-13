@@ -1,21 +1,42 @@
 "use client"
-import Link from "next/link"
 import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import Link from "next/link"
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false)
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-sm bg-white rounded-md shadow-lg p-8 text-black border  border-gray-300">
-                <h2 className="text-2xl font-bold text-center mb-6 ">Sign In</h2>
+            <div className="w-full max-w-md bg-white  shadow-lg p-8 text-black border border-gray-300 rounded-md">
+                <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
                 <form className="space-y-4">
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">First Name</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border rounded-md focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
+                                placeholder="First Name"
+                                required
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">Last Name</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border rounded-md focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
+                                placeholder="Last Name"
+                                required
+                            />
+                        </div>
+                    </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Email</label>
                         <input
                             type="email"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
                             placeholder="Enter your email"
                             required
                         />
@@ -25,7 +46,7 @@ export default function LoginPage() {
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
-                                className="w-full px-4 py-2 border border-gray-300  rounded-md pr-10 focus:outline-none focus:ring-1 focus:ring-black"
+                                className="w-full px-4 py-2 border rounded-md pr-10 focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
                                 placeholder="Enter your password"
                                 required
                             />
@@ -38,26 +59,19 @@ export default function LoginPage() {
                             </button>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                        <a href="#" className="text-black  hover:underline">
-                            Forgot password?
-                        </a>
-                    </div>
-                    <div className="flex items-center">
-                        <input type="checkbox" id="terms" className="mr-2 " required />
-                        <label htmlFor="terms" className="text-sm">
-                            I agree to the <a href="#" className="text-black font-semibold hover:underline">Terms & Conditions</a>
-                        </label>
-                    </div>
+                    <p className="text-xs text-gray-600">
+                        By creating an account, you agree to our{" "}
+                        <a href="#" className="text-black font-semibold hover:underline">User Agreement</a> and{" "}
+                        <a href="#" className="text-black font-semibold hover:underline">Privacy Policy</a>.
+                    </p>
                     <button
                         type="submit"
-                        className="w-full bg-black text-white py-2 rounded-md cursor-pointer shadow-[0_2px_0_#222] active:translate-y-1 active:shadow-[0_2px_0_#222] transition duration-150"
-
+                        className="w-full bg-black text-white py-2 rounded-md  transition transform active:translate-y-1 active:shadow-[0_2px_0_#222] shadow-[0_2px_0_#222] duration-150 cursor-pointer"
                     >
-                        Sign In
+                        Create Account
                     </button>
                 </form>
-                <div className="divider">OR</div>
+             <div className="divider">OR</div>
 
                 <div>
                     <button className="btn bg-white text-black border-[#e5e5e5] w-full rounded-md ">
@@ -66,14 +80,13 @@ export default function LoginPage() {
                     </button>
                     <p className="text-center text-sm mt-4">
                         Don’t have an account?{" "}
-                        <Link href='/register'
+                        <Link href='/login'
                             className="text-black font-bold hover:underline">
-                            Register
+                            Sign In
                         </Link>
                     </p>
                 </div>
             </div>
-
-        </div>
+        </div >
     )
 }

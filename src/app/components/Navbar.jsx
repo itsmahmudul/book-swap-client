@@ -25,7 +25,7 @@ export default function Navbar() {
 
         {/* Right side: account, wishlist, theme toggle, mobile menu */}
         <div className="flex items-center gap-4">
-          <a href="#" className="flex items-center gap-1">
+          <a href="/login" className="flex items-center gap-1">
             <User size={16} /> My Account
           </a>
           <a href="#" className="flex items-center gap-1">
