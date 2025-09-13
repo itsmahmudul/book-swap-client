@@ -1,5 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
+import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -14,9 +15,9 @@ export default function ThemeToggle() {
   if (!mounted) return null; // only render after client mounted
 
   return (
-   <Button variant="outline" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+   <Switch variant="outline" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
       Switch to {theme === "dark" ? "Light" : "Dark"}
-    </Button>
+    </Switch>
    
   );
 }
