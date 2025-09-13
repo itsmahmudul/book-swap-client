@@ -1,17 +1,38 @@
 "use client"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import Link from "next/link"
+import { useForm } from "react-hook-form"
+import useAuth from "../context/useAuth"
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false)
+    const { handleSubmit, register, formState: { errors } } = useForm();
+    const { createUser, loading, updateUserProfile } = useAuth();
+    const userRef = useRef();
+    const router = useRouter();
+
+    const onSubmit = async (data) => {
+        const userCredential = await createUser(data.email, data.password);
+        await updateUserProfile({
+            name: `${data.firstName} ${data.lastName}`
+        });
+        userRef.current = userCredential.user;
+        console.log("User registered:", userRef.current);
+        router.push("/");
+        console.log("User created:", userCredential.user);
+
+    }
 
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md bg-white  shadow-lg p-8 text-black border border-gray-300 rounded-md">
+            <div className="w-full max-w-md bg-transparent  shadow-lg p-8 text-black border border-gray-300 rounded-md">
                 <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
-                <form className="space-y-4">
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-4">
                     <div className="flex gap-4">
                         <div className="flex-1">
                             <label className="block text-sm font-medium mb-1">First Name</label>
@@ -19,7 +40,7 @@ export default function RegisterPage() {
                                 type="text"
                                 className="w-full px-4 py-2 border rounded-md focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
                                 placeholder="First Name"
-                                required
+                                {...register('firstName', { required: true })}
                             />
                         </div>
                         <div className="flex-1">
@@ -28,7 +49,7 @@ export default function RegisterPage() {
                                 type="text"
                                 className="w-full px-4 py-2 border rounded-md focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
                                 placeholder="Last Name"
-                                required
+                                {...register('lastName', { required: true })}
                             />
                         </div>
                     </div>
@@ -38,9 +59,12 @@ export default function RegisterPage() {
                             type="email"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
                             placeholder="Enter your email"
-                            required
+                            {...register('email', { required: true })}
                         />
                     </div>
+                    {errors.password && (
+                        <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+                    )}
                     <div>
                         <label className="block text-sm font-medium mb-1">Password</label>
                         <div className="relative">
@@ -48,7 +72,14 @@ export default function RegisterPage() {
                                 type={showPassword ? "text" : "password"}
                                 className="w-full px-4 py-2 border rounded-md pr-10 focus:outline-none border-gray-300 focus:ring-1 focus:ring-black"
                                 placeholder="Enter your password"
-                                required
+                                {...register("password", {
+                                    required: "Password is required",
+                                    pattern: {
+                                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+                                        message:
+                                            "Password must be at least 8 characters and include uppercase, lowercase, and a number",
+                                    },
+                                })}
                             />
                             <button
                                 type="button"
@@ -58,7 +89,11 @@ export default function RegisterPage() {
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
                         </div>
+                        {errors.password && (
+                            <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+                        )}
                     </div>
+
                     <p className="text-xs text-gray-600">
                         By creating an account, you agree to our{" "}
                         <a href="#" className="text-black font-semibold hover:underline">User Agreement</a> and{" "}
@@ -71,7 +106,7 @@ export default function RegisterPage() {
                         Create Account
                     </button>
                 </form>
-             <div className="divider">OR</div>
+                <div className="divider">OR</div>
 
                 <div>
                     <button className="btn bg-white text-black border-[#e5e5e5] w-full rounded-md ">
@@ -85,8 +120,13 @@ export default function RegisterPage() {
                             Sign In
                         </Link>
                     </p>
+
                 </div>
+
             </div>
+
         </div >
     )
 }
+
+

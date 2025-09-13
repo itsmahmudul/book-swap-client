@@ -1,13 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button, } from "@/components/ui/button"
 import { Heart, User, ShoppingCart, Menu, X } from "lucide-react"
 import ThemeToggle from "./ThemeToggle"
 import SearchBar from "./SearchBar"
+import useAuth from "../context/useAuth"
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useAuth()
 
   return (
     <header className="w-full border-b">
@@ -25,9 +27,16 @@ export default function Navbar() {
 
         {/* Right side: account, wishlist, theme toggle, mobile menu */}
         <div className="flex items-center gap-4">
-          <a href="/login" className="flex items-center gap-1">
-            <User size={16} /> My Account
-          </a>
+          {
+            user ?
+              <button className="btn">
+                Log out
+              </button> :
+              <a href="/login" className="flex items-center gap-1">
+                <User size={16} /> My Account
+              </a>
+
+          }
           <a href="#" className="flex items-center gap-1">
             <Heart size={16} /> Wishlist
           </a>
