@@ -1,38 +1,62 @@
 "use client"
-import { useRef, useState } from "react"
+
+import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
-import useAuth from "../context/useAuth"
+import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useRouter } from "next/navigation"
+import { useDispatch } from "react-redux"
+import { setUser } from "@/app/store/authSlice"
+import { auth } from "../../../firebase.init"
 
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false)
-    const { handleSubmit, register, formState: { errors } } = useForm();
-    const { createUser, loading, updateUserProfile } = useAuth();
-    const userRef = useRef();
-    const router = useRouter();
+    const [firebaseError, setFirebaseError] = useState(null)
+    const { handleSubmit, register, formState: { errors } } = useForm()
+    const router = useRouter()
+    const dispatch = useDispatch()
 
     const onSubmit = async (data) => {
-        const userCredential = await createUser(data.email, data.password);
-        await updateUserProfile({
-            name: `${data.firstName} ${data.lastName}`
-        });
-        userRef.current = userCredential.user;
-        console.log("User registered:", userRef.current);
-        router.push("/");
-        console.log("User created:", userCredential.user);
-
+        setFirebaseError(null)
+        const fullName = data.firstName + " " + data.lastName
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
+            await updateProfile(userCredential.user, { displayName: fullName })
+            dispatch(setUser({
+                uid: userCredential.user.uid,
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName,
+            }))
+            router.push("/")
+        } catch (error) {
+            setFirebaseError(error.message)
+        }
     }
 
+    const handleGoogleRegister = async () => {
+        setFirebaseError(null)
+        try {
+            const provider = new GoogleAuthProvider()
+            const result = await signInWithPopup(auth, provider)
+            const user = result.user
+            dispatch(setUser({
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+            }))
+            router.push("/")
+        } catch (error) {
+            setFirebaseError(error.message)
+        }
+    }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md bg-transparent  shadow-lg p-8 text-black border border-gray-300 rounded-md">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100 mx-2 md:mx-0">
+            <div className="w-full max-w-md bg-transparent shadow-lg p-8 text-black border border-gray-300 rounded-md">
                 <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-4">
+                {firebaseError && <p className="text-red-500 text-xs mb-2">{firebaseError}</p>}
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="flex gap-4">
                         <div className="flex-1">
                             <label className="block text-sm font-medium mb-1">First Name</label>
@@ -62,9 +86,6 @@ export default function RegisterPage() {
                             {...register('email', { required: true })}
                         />
                     </div>
-                    {errors.password && (
-                        <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-                    )}
                     <div>
                         <label className="block text-sm font-medium mb-1">Password</label>
                         <div className="relative">
@@ -76,8 +97,7 @@ export default function RegisterPage() {
                                     required: "Password is required",
                                     pattern: {
                                         value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-                                        message:
-                                            "Password must be at least 8 characters and include uppercase, lowercase, and a number",
+                                        message: "Password must be at least 8 characters and include uppercase, lowercase, and a number",
                                     },
                                 })}
                             />
@@ -89,11 +109,8 @@ export default function RegisterPage() {
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
                         </div>
-                        {errors.password && (
-                            <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-                        )}
+                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
                     </div>
-
                     <p className="text-xs text-gray-600">
                         By creating an account, you agree to our{" "}
                         <a href="#" className="text-black font-semibold hover:underline">User Agreement</a> and{" "}
@@ -101,32 +118,34 @@ export default function RegisterPage() {
                     </p>
                     <button
                         type="submit"
-                        className="w-full bg-black text-white py-2 rounded-md  transition transform active:translate-y-1 active:shadow-[0_2px_0_#222] shadow-[0_2px_0_#222] duration-150 cursor-pointer"
+                        className="w-full bg-black text-white py-2 rounded-md transition transform active:translate-y-1 active:shadow-[0_2px_0_#222] shadow-[0_2px_0_#222] duration-150 cursor-pointer"
                     >
                         Create Account
                     </button>
                 </form>
                 <div className="divider">OR</div>
-
                 <div>
-                    <button className="btn bg-white text-black border-[#e5e5e5] w-full rounded-md ">
-                        <svg aria-label="Google logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g><path d="m0 0H512V512H0" fill="#fff"></path><path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path><path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path><path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path><path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path></g></svg>
-                        Login with Google
+                    <button
+                        onClick={handleGoogleRegister}
+                        className="btn bg-white text-black border-[#e5e5e5] w-full rounded-md"
+                    >
+                        <svg aria-label="Google logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <g>
+                                <path d="m0 0H512V512H0" fill="#fff"></path>
+                                <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path>
+                                <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path>
+                                <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path>
+                                <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path>
+                            </g>
+                        </svg>
+                        Register with Google
                     </button>
                     <p className="text-center text-sm mt-4">
-                        Don’t have an account?{" "}
-                        <Link href='/login'
-                            className="text-black font-bold hover:underline">
-                            Sign In
-                        </Link>
+                        Already have an account?{" "}
+                        <Link href='/login' className="text-black font-bold hover:underline">Sign In</Link>
                     </p>
-
                 </div>
-
             </div>
-
-        </div >
+        </div>
     )
 }
-
-

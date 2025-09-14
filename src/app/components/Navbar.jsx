@@ -5,11 +5,18 @@ import { Button, } from "@/components/ui/button"
 import { Heart, User, ShoppingCart, Menu, X } from "lucide-react"
 import ThemeToggle from "./ThemeToggle"
 import SearchBar from "./SearchBar"
-import useAuth from "../context/useAuth"
+import { useSelector } from "react-redux"
+import { signOut } from "firebase/auth"
+import { auth } from "../../../firebase.init"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useAuth()
+  const { user } = useSelector((state) => state.auth);
+
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
 
   return (
     <header className="w-full border-b">
@@ -28,15 +35,20 @@ export default function Navbar() {
         {/* Right side: account, wishlist, theme toggle, mobile menu */}
         <div className="flex items-center gap-4">
           {
-            user ?
-              <button className="btn">
-                Log out
-              </button> :
+            user ? (
+              <button
+                className="flex items-center gap-1 cursor-pointer"
+                onClick={handleLogout}
+              >
+                <User size={16} /> Logout
+              </button>
+            ) : (
               <a href="/login" className="flex items-center gap-1">
                 <User size={16} /> My Account
               </a>
-
+            )
           }
+
           <a href="#" className="flex items-center gap-1">
             <Heart size={16} /> Wishlist
           </a>
