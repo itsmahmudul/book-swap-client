@@ -1,17 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./pages/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}"
+    './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the addition of the `app` directory.
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+ 
+    // Or if using `src` directory:
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
-    extend: {
-       fontFamily: {
-         sans: ["var(--font-inter)", "sans-serif"],
-        serif: ["var(--font-merriweather)", "serif"],
-       }
-    },
+    extend: {},
   },
   plugins: [],
-};
+}

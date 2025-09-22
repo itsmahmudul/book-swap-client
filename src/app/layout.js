@@ -1,7 +1,7 @@
 import { Inter, Merriweather } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
 import ReduxProvider from "./ReduxProvider";
+import ThemeRoot from "@/utils/ThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,12 +21,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${merriweather.variable}`}>
+    <html lang="en"  suppressHydrationWarning className={`${inter.variable} ${merriweather.variable}`}>
       <body className="font-sans antialiased">
         <ReduxProvider>
-          <ThemeProvider attribute="data-theme" defaultTheme="dark">
+          <ThemeRoot attribute="class" enableSystem defaultTheme="system">
             {children}
-          </ThemeProvider>
+          </ThemeRoot>
         </ReduxProvider>
       </body>
     </html>

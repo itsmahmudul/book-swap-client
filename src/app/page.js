@@ -1,9 +1,12 @@
-import MainLayout from "./components/MainLayout";
+
+import Navbar from "./components/Navbar";
+import { ThemeToggle } from "./themeToggle";
 
 export default function Home() {
   return (  
-    <MainLayout>
-     
-    </MainLayout>
+  <>
+  <nav><Navbar></Navbar></nav>
+  <ThemeToggle/>
+  </>
   );
 }
